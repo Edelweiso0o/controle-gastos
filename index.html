@@ -16,7 +16,6 @@
             font-family: 'Inter', sans-serif; 
             overflow: hidden; 
         }
-        /* Customização da barra de rolagem da tabela (fina e elegante) */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -36,7 +35,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex flex-col">
 
-    <!-- Container Superior Travado Inteiro no Topo (Header azul + Cards + Abas + Filtros) -->
+    <!-- Container Superior Travado no Topo -->
     <div class="bg-slate-50 flex-shrink-0">
         
         <!-- Header / Navbar -->
@@ -48,12 +47,12 @@
                 </div>
             </div>
 
-            <!-- Versão v1.7.7 -->
+            <!-- Versão v2.2.0 -->
             <div id="labelVersaoData" class="absolute bottom-1 left-4 text-[10px] text-indigo-100 font-semibold tracking-wide pointer-events-none drop-shadow-sm">
-                v1.7.7 • 16/10/2026 08:16
+                v2.2.0 • 16/10/2026 16:06
             </div>
 
-            <!-- Temporizador de Comunicação (em tempo real) -->
+            <!-- Temporizador de Comunicação -->
             <div id="labelTemporizador" title="tempo de resposta" class="absolute bottom-1 right-4 text-[10px] text-indigo-100 font-mono font-medium tracking-tight cursor-help">
                 0.0s
             </div>
@@ -62,8 +61,8 @@
         <!-- Main Container Superior (Cards e Abas) -->
         <main class="max-w-7xl mx-auto px-4 pt-3 pb-2 w-full space-y-3">
 
-            <!-- Cards de Resumo / Saldo -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- Cards de Resumo / Saldo (4 Cards completos com Dinheiro na Conta) -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
                     <div>
                         <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Total Rendas</p>
@@ -91,6 +90,15 @@
                         <i class="fa-solid fa-credit-card text-lg"></i>
                     </div>
                 </div>
+                <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Dinheiro na Conta</p>
+                        <h3 id="cardDinheiroConta" class="text-xl font-bold text-indigo-600 mt-0.5">R$ 0,00</h3>
+                    </div>
+                    <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-500">
+                        <i class="fa-solid fa-building-columns text-lg"></i>
+                    </div>
+                </div>
             </div>
 
             <!-- Seções de Abas / Conteúdo -->
@@ -105,6 +113,9 @@
                     </button>
                     <button onclick="mudarAba('Rendas')" id="tabBtnRendas" class="flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center justify-center space-x-2">
                         <i class="fa-solid fa-wallet"></i> <span>Rendas</span>
+                    </button>
+                    <button onclick="mudarAba('CorrecaoManual')" id="tabBtnCorrecaoManual" class="flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-transparent text-amber-600 hover:text-amber-700 transition flex items-center justify-center space-x-2 bg-amber-50/30">
+                        <i class="fa-solid fa-wrench"></i> <span>Correção de Vínculos</span>
                     </button>
                 </div>
 
@@ -182,6 +193,16 @@
                         </div>
                     </div>
 
+                    <!-- ABA CORREÇÃO MANUAL DE VÍNCULOS -->
+                    <div id="conteudoCorrecaoManual" class="space-y-3 hidden">
+                        <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-sm text-amber-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Área de Vínculo em Lote e Ajuste Individual por ID</h4>
+                                <p class="text-xs text-amber-700">Migre todos os sub-itens de um ID antigo para a compra correta, ou ajuste o ID de um sub-item específico na lista abaixo.</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -192,24 +213,23 @@
     <div class="max-w-7xl mx-auto px-4 py-3 pb-8 w-full flex-grow flex flex-col min-h-0">
         <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex-grow flex flex-col min-h-0">
             
-            <!-- Tabela Cartão de Crédito -->
+            <!-- Tabela Cartão de Crédito (Ordem correta: Data, Mês Fatura, Estabelecimento, Categoria, Parcela, ID, Valor Total) -->
             <div id="tabelaContainerCartao" class="overflow-x-auto overflow-y-auto custom-scrollbar rounded-lg border border-slate-100 flex-grow">
                 <table class="w-full text-left border-collapse">
                     <thead class="sticky top-0 z-20 bg-slate-50 text-slate-400 uppercase text-xs font-semibold border-b border-slate-100 shadow-sm">
                         <tr>
                             <th class="py-3 px-4 bg-slate-50">Data</th>
-                            <th class="py-3 px-4 bg-slate-50">Fatura Mês</th>
+                            <th class="py-3 px-4 bg-slate-50">Mês Fatura</th>
                             <th class="py-3 px-4 bg-slate-50">Estabelecimento</th>
                             <th class="py-3 px-4 bg-slate-50">Categoria</th>
                             <th class="py-3 px-4 bg-slate-50">Parcela</th>
-                            <th class="py-3 px-4 text-center bg-slate-50">Itens</th>
+                            <th class="py-3 px-4 bg-slate-50">ID</th>
                             <th class="py-3 px-4 text-right bg-slate-50">Valor Total</th>
+                            <th class="py-3 px-4 text-center bg-slate-50">Itens</th>
                             <th class="py-3 px-4 text-center bg-slate-50">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaCartaoCorpo" class="divide-y divide-slate-100 text-sm">
-                        <!-- Preenchido via JS -->
-                    </tbody>
+                    <tbody id="tabelaCartaoCorpo" class="divide-y divide-slate-100 text-sm"></tbody>
                 </table>
             </div>
 
@@ -246,6 +266,49 @@
                 </table>
             </div>
 
+            <!-- Tabela Correção Manual -->
+            <div id="tabelaContainerCorrecaoManual" class="overflow-x-auto overflow-y-auto custom-scrollbar rounded-lg border border-slate-100 hidden flex-grow p-4 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">1. Selecione a Compra Correta (ID Destino)</label>
+                        <select id="selectCompraDestinoManual" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:border-amber-500"></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">2. Selecione o ID do Sub-Item Incorreto</label>
+                        <select id="selectIdAntigoManual" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 outline-none focus:border-amber-500"></select>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button onclick="salvarVinculoManualLote()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-check"></i> <span>Migrar Todos os Itens para este ID (Lote)</span>
+                    </button>
+                </div>
+
+                <hr class="border-slate-100 my-4">
+
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <h4 class="font-bold text-sm text-slate-700">Lista Completa de Sub-Itens e Ajuste Individual</h4>
+                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                        <input type="text" id="filtroIdExatoManual" oninput="filtrarTabelaSubItensManual()" placeholder="Filtrar ID exato (ex: 8)..." class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-full sm:w-44">
+                        <input type="text" id="filtroDescSubManual" oninput="filtrarTabelaSubItensManual()" placeholder="Filtrar descrição..." class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-1.5 outline-none focus:border-amber-500 w-full sm:w-52">
+                    </div>
+                </div>
+
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 text-slate-400 uppercase text-xs font-semibold border-b border-slate-100">
+                        <tr>
+                            <th class="py-2 px-3">ID Atual</th>
+                            <th class="py-2 px-3">Tipo</th>
+                            <th class="py-2 px-3">Descrição do Sub-Item</th>
+                            <th class="py-2 px-3 text-right">Valor</th>
+                            <th class="py-2 px-3 text-center">Alterar ID Individual</th>
+                            <th class="py-2 px-3 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaListaSubItensManual" class="divide-y divide-slate-100 text-sm"></tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 
@@ -260,8 +323,8 @@
             <div class="p-6 space-y-4 overflow-y-auto flex-grow">
                 <input type="hidden" id="modalTipoAba">
                 <input type="hidden" id="modalRowIndex">
+                <input type="hidden" id="modalIdCompra">
 
-                <!-- Datalists para autocompletar histórico exclusivo -->
                 <datalist id="listaSugestoesItens"></datalist>
                 <datalist id="listaSugestoesEstabelecimentos"></datalist>
                 <datalist id="listaSugestoesCategorias"></datalist>
@@ -322,14 +385,12 @@
                             <h4 class="font-bold text-sm text-slate-700"><i class="fa-solid fa-list-check text-indigo-600 mr-1"></i> Detalhes dos Itens da Compra</h4>
                             <p class="text-xs text-slate-400">Para parceladas, a soma dos sub-itens deve corresponder ao valor total da compra.</p>
                         </div>
-                        <button type="button" onclick="adicionarLinhaSubItem()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1">
+                        <button type="button" onclick="adicionarLinhaSubItem(undefined, undefined, undefined, true)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center space-x-1">
                             <i class="fa-solid fa-plus"></i> <span>Adicionar Item</span>
                         </button>
                     </div>
 
-                    <div id="listaSubItensContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                        <!-- Inserido dinamicamente via JS -->
-                    </div>
+                    <div id="listaSubItensContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
 
                     <div class="bg-indigo-50/50 p-3 rounded-lg flex justify-between items-center text-xs font-semibold">
                         <span class="text-slate-600">Soma dos Itens: <strong id="lblSomaItens" class="text-indigo-600">R$ 0,00</strong></span>
@@ -363,24 +424,20 @@
         function exibirVersaoData() {
             const elemento = document.getElementById('labelVersaoData');
             if (elemento) {
-                // Versão e carimbo estático de quando o código foi gerado/atualizado
-                elemento.innerText = "v1.7.7 • 16/10/2026 08:16";
+                elemento.innerText = "v2.2.0 • 16/10/2026 16:06";
             }
         }
 
         function iniciarTemporizadorTempoReal() {
             const inicio = performance.now();
             const el = document.getElementById('labelTemporizador');
-            
             if (temporizadorIntervalId) clearInterval(temporizadorIntervalId);
-
             temporizadorIntervalId = setInterval(() => {
                 if (el) {
                     const decorrido = (performance.now() - inicio) / 1000;
                     el.innerText = `${decorrido.toFixed(1)}s`;
                 }
             }, 100);
-
             return inicio;
         }
 
@@ -471,24 +528,33 @@
         }
 
         function mudarAba(aba) {
-            const idConteudo = aba === 'CartaoDeCredito' ? 'conteudoCartaoDeCredito' : 'conteudo' + aba;
-            const idTabela = aba === 'CartaoDeCredito' ? 'tabelaContainerCartao' : 'tabelaContainer' + aba;
-
             document.getElementById('conteudoCartaoDeCredito').classList.add('hidden');
             document.getElementById('conteudoDespesas').classList.add('hidden');
             document.getElementById('conteudoRendas').classList.add('hidden');
+            document.getElementById('conteudoCorrecaoManual').classList.add('hidden');
 
             document.getElementById('tabelaContainerCartao').classList.add('hidden');
             document.getElementById('tabelaContainerDespesas').classList.add('hidden');
             document.getElementById('tabelaContainerRendas').classList.add('hidden');
+            document.getElementById('tabelaContainerCorrecaoManual').classList.add('hidden');
 
             document.getElementById('tabBtnCartaoDeCredito').className = "flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center justify-center space-x-2";
             document.getElementById('tabBtnDespesas').className = "flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center justify-center space-x-2";
             document.getElementById('tabBtnRendas').className = "flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition flex items-center justify-center space-x-2";
+            document.getElementById('tabBtnCorrecaoManual').className = "flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-transparent text-amber-600 hover:text-amber-700 transition flex items-center justify-center space-x-2 bg-amber-50/30";
 
-            document.getElementById(idConteudo).classList.remove('hidden');
-            document.getElementById(idTabela).classList.remove('hidden');
-            document.getElementById('tabBtn' + aba).className = "flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-indigo-600 text-indigo-600 transition flex items-center justify-center space-x-2";
+            if (aba === 'CorrecaoManual') {
+                document.getElementById('conteudoCorrecaoManual').classList.remove('hidden');
+                document.getElementById('tabelaContainerCorrecaoManual').classList.remove('hidden');
+                document.getElementById('tabBtnCorrecaoManual').className = "flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-amber-600 text-amber-600 transition flex items-center justify-center space-x-2 bg-amber-50/50";
+                popularSelectsCorrecaoManual();
+            } else {
+                const idConteudo = aba === 'CartaoDeCredito' ? 'conteudoCartaoDeCredito' : 'conteudo' + aba;
+                const idTabela = aba === 'CartaoDeCredito' ? 'tabelaContainerCartao' : 'tabelaContainer' + aba;
+                document.getElementById(idConteudo).classList.remove('hidden');
+                document.getElementById(idTabela).classList.remove('hidden');
+                document.getElementById('tabBtn' + aba).className = "flex-1 py-3 px-4 text-sm font-semibold text-center border-b-2 border-indigo-600 text-indigo-600 transition flex items-center justify-center space-x-2";
+            }
 
             carregarDados();
         }
@@ -513,10 +579,179 @@
                     filtrarCartao();
                     renderizarDespesas();
                     renderizarRendas();
+                    popularSelectsCorrecaoManual();
                 })
                 .catch(err => {
                     pararTemporizadorTempoReal(inicio);
                     console.error("Erro ao carregar dados:", err);
+                });
+        }
+
+        function popularSelectsCorrecaoManual() {
+            const selectIdAntigo = document.getElementById('selectIdAntigoManual');
+            const selectComp = document.getElementById('selectCompraDestinoManual');
+
+            if (!selectIdAntigo || !selectComp) return;
+
+            const valorAtualCompra = selectComp.value;
+
+            selectIdAntigo.innerHTML = '';
+            selectComp.innerHTML = '';
+
+            const idsItensUnicos = [...new Set(dadosGlobaisItensCartao.map(sub => sub.idCompra))];
+            idsItensUnicos.sort((a, b) => a - b);
+
+            idsItensUnicos.forEach(idVal => {
+                const opt = document.createElement('option');
+                opt.value = idVal;
+                opt.text = `ID de Sub-Item: ${idVal}`;
+                selectIdAntigo.appendChild(opt);
+            });
+
+            const comprasCartao = dadosGlobaisExtrato.filter(item => item.tipo === 'CartaoDeCredito');
+            const idsUnicosCompras = [];
+            comprasCartao.forEach(item => {
+                if (!idsUnicosCompras.some(c => c.idCompra === item.idCompra)) {
+                    idsUnicosCompras.push(item);
+                }
+            });
+
+            idsUnicosCompras.sort((a, b) => parseInt(a.idCompra, 10) - parseInt(b.idCompra, 10));
+
+            idsUnicosCompras.forEach(compra => {
+                const opt = document.createElement('option');
+                opt.value = compra.idCompra;
+                opt.text = `ID: ${compra.idCompra} - ${compra.descricao} (${compra.data} | ${formatarMoeda(compra.valor)})`;
+                selectComp.appendChild(opt);
+            });
+
+            if (valorAtualCompra) {
+                selectComp.value = valorAtualCompra;
+            }
+
+            filtrarTabelaSubItensManual();
+        }
+
+        function filtrarTabelaSubItensManual() {
+            const filtroId = document.getElementById('filtroIdExatoManual').value.trim();
+            const filtroDesc = document.getElementById('filtroDescSubManual').value.toLowerCase().trim();
+            const tbodyManual = document.getElementById('tabelaListaSubItensManual');
+            if (!tbodyManual) return;
+
+            tbodyManual.innerHTML = '';
+
+            const subItensFiltrados = dadosGlobaisItensCartao.filter(sub => {
+                if (filtroId !== '') {
+                    if (parseInt(sub.idCompra, 10) !== parseInt(filtroId, 10)) return false;
+                }
+                if (filtroDesc !== '') {
+                    if (!sub.descricao || !sub.descricao.toLowerCase().includes(filtroDesc)) return false;
+                }
+                return true;
+            });
+
+            if (subItensFiltrados.length === 0) {
+                tbodyManual.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-400 text-xs">Nenhum sub-item encontrado com esses filtros.</td></tr>`;
+                return;
+            }
+
+            subItensFiltrados.forEach(sub => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="py-2 px-3 font-mono font-bold text-amber-600">${sub.idCompra}</td>
+                    <td class="py-2 px-3 text-xs uppercase">${sub.tipoSub}</td>
+                    <td class="py-2 px-3 font-medium text-slate-800">${sub.descricao}</td>
+                    <td class="py-2 px-3 text-right font-bold">${formatarMoeda(sub.valor)}</td>
+                    <td class="py-2 px-3 text-center">
+                        <div class="flex items-center justify-center space-x-1">
+                            <input type="number" id="novoIdInd_${sub.rowItem}" value="${sub.idCompra}" class="w-16 bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded px-2 py-1 text-center outline-none focus:border-amber-500 font-mono">
+                            <button onclick="salvarIdIndividual(${sub.rowItem})" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded text-xs transition" title="Salvar novo ID"><i class="fa-solid fa-check"></i></button>
+                        </div>
+                    </td>
+                    <td class="py-2 px-3 text-center">
+                        <button onclick="deletarSubItemManual(${sub.rowItem})" class="text-rose-500 hover:text-rose-700 p-1" title="Excluir sub-item"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbodyManual.appendChild(tr);
+            });
+        }
+
+        function salvarIdIndividual(rowItem) {
+            const inputNovoId = document.getElementById(`novoIdInd_${rowItem}`);
+            if (!inputNovoId) return;
+            const novoId = parseInt(inputNovoId.value, 10);
+
+            if (isNaN(novoId) || novoId <= 0) {
+                alert("Digite um ID válido.");
+                return;
+            }
+
+            const params = new URLSearchParams({
+                action: 'atualizarIdSubItemIndividual',
+                rowItem: rowItem,
+                novoId: novoId
+            }).toString();
+
+            const inicio = iniciarTemporizadorTempoReal();
+            fetch(URL_API + "?" + params)
+                .then(res => res.json())
+                .then(resposta => {
+                    pararTemporizadorTempoReal(inicio);
+                    carregarDados();
+                })
+                .catch(err => {
+                    pararTemporizadorTempoReal(inicio);
+                    alert("Erro ao alterar ID individual do sub-item.");
+                });
+        }
+
+        function salvarVinculoManualLote() {
+            const novoIdCompra = document.getElementById('selectCompraDestinoManual').value;
+            const idAntigo = document.getElementById('selectIdAntigoManual').value;
+
+            if (!novoIdCompra || !idAntigo) {
+                alert("Selecione a compra correta e o ID do sub-item.");
+                return;
+            }
+
+            const params = new URLSearchParams({
+                action: 'vincularManualLote',
+                idAntigo: idAntigo,
+                novoIdCompra: novoIdCompra
+            }).toString();
+
+            const inicio = iniciarTemporizadorTempoReal();
+            fetch(URL_API + "?" + params)
+                .then(res => res.json())
+                .then(resposta => {
+                    pararTemporizadorTempoReal(inicio);
+                    carregarDados();
+                })
+                .catch(err => {
+                    pararTemporizadorTempoReal(inicio);
+                    alert("Erro ao migrar sub-itens em lote.");
+                });
+        }
+
+        function deletarSubItemManual(rowItem) {
+            if (!confirm("Tem certeza que deseja excluir este sub-item da planilha?")) return;
+
+            const params = new URLSearchParams({
+                action: 'deletarSubItem',
+                rowItem: rowItem
+            }).toString();
+
+            const inicio = iniciarTemporizadorTempoReal();
+            fetch(URL_API + "?" + params)
+                .then(res => res.json())
+                .then(resposta => {
+                    pararTemporizadorTempoReal(inicio);
+                    carregarDados();
+                })
+                .catch(err => {
+                    pararTemporizadorTempoReal(inicio);
+                    alert("Erro ao excluir sub-item.");
                 });
         }
 
@@ -537,9 +772,12 @@
                 }
             });
 
+            let dinheiroConta = totalRendas - totalDespesas;
+
             document.getElementById('cardTotalRendas').innerText = formatarMoeda(totalRendas);
             document.getElementById('cardTotalDespesas').innerText = formatarMoeda(totalDespesas);
             document.getElementById('cardTotalCartao').innerText = formatarMoeda(totalCartao);
+            document.getElementById('cardDinheiroConta').innerText = formatarMoeda(dinheiroConta);
         }
 
         function filtrarCartao() {
@@ -551,42 +789,21 @@
 
             const filtrados = dadosGlobaisExtrato.filter(item => {
                 if (item.tipo !== 'CartaoDeCredito') return false;
-
-                if (mesFatura !== 'todos') {
-                    if (item.faturaMes !== mesFatura) return false;
-                }
-
+                if (mesFatura !== 'todos' && item.faturaMes !== mesFatura) return false;
                 if (mesCompra !== 'todos') {
-                    let mesItemData = "";
-                    if (item.data) {
-                        const partes = item.data.split('/');
-                        if (partes.length === 3) mesItemData = partes[1];
-                    }
+                    let mesItemData = item.data ? item.data.split('/')[1] : "";
                     if (mesItemData !== mesCompra) return false;
                 }
-
                 if (textoBusca && !item.descricao.toLowerCase().includes(textoBusca)) return false;
-
                 return true;
             });
 
             const lblContador = document.getElementById('contadorCartao');
-            if (mesFatura !== 'todos' || mesCompra !== 'todos' || textoBusca !== '') {
-                lblContador.innerText = `Exibindo ${filtrados.length} de ${totalGeralCartao} itens`;
-            } else {
-                lblContador.innerText = `${filtrados.length} itens`;
-            }
+            lblContador.innerText = (mesFatura !== 'todos' || mesCompra !== 'todos' || textoBusca !== '') 
+                ? `Exibindo ${filtrados.length} de ${totalGeralCartao} itens` 
+                : `${filtrados.length} itens`;
 
             atualizarCardsResumo();
-
-            filtrados.sort((a, b) => {
-                const [diaA, mesA, anoA] = a.data.split('/').map(Number);
-                const [diaB, mesB, anoB] = b.data.split('/').map(Number);
-                const dataObjA = new Date(anoA, mesA - 1, diaA);
-                const dataObjB = new Date(anoB, mesB - 1, diaB);
-                return dataObjB - dataObjA;
-            });
-
             renderizarCartao(filtrados);
         }
 
@@ -595,29 +812,28 @@
             tbody.innerHTML = '';
 
             if (lista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-400">Nenhum registro encontrado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-400">Nenhum registro encontrado.</td></tr>`;
                 return;
             }
 
             lista.forEach(item => {
-                const itensDestaCompra = dadosGlobaisItensCartao.filter(sub => parseInt(sub.rowIndex) === parseInt(item.rowIndex));
+                const itensDestaCompra = dadosGlobaisItensCartao.filter(sub => parseInt(sub.idCompra) === parseInt(item.idCompra));
                 
                 let botaoItens = `<span class="text-slate-400 text-xs">Nenhum</span>`;
                 if (itensDestaCompra.length > 0) {
-                    botaoItens = `<button onclick='toggleVisualizarItens(${item.rowIndex})' class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center space-x-1 mx-auto">
+                    botaoItens = `<button onclick='toggleVisualizarItens("${item.idCompra}")' class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-2.5 py-1 rounded-lg text-xs font-semibold transition flex items-center space-x-1 mx-auto">
                         <i class="fa-solid fa-list-check"></i> <span>(${itensDestaCompra.length}) Ver</span>
                     </button>`;
                 }
 
                 let htmlItensOcultos = '';
                 if (itensDestaCompra.length > 0) {
-                    htmlItensOcultos = `<div id="subitens-${item.rowIndex}" class="hidden mt-2 pl-4 border-l-2 border-indigo-200 space-y-1 text-xs text-slate-500 bg-slate-50 p-2 rounded-r-lg">
+                    htmlItensOcultos = `<div id="subitens-${item.idCompra}" class="hidden mt-2 pl-4 border-l-2 border-indigo-200 space-y-1 text-xs text-slate-500 bg-slate-50 p-2 rounded-r-lg">
                         <span class="font-semibold text-slate-600 block mb-1">Sub-itens da Compra:</span>
                         ${itensDestaCompra.map(sub => {
                             let sinal = sub.tipoSub === 'credito' ? '-' : '+';
                             let corTexto = sub.tipoSub === 'credito' ? 'text-emerald-600' : 'text-slate-700';
-                            let rotuloTipo = sub.tipoSub === 'credito' ? '(Cupom)' : '(Débito)';
-                            return `<div>• ${sub.descricao} <span class="text-[10px] text-slate-400">${rotuloTipo}</span> - <strong class="${corTexto}">${sinal}${formatarMoeda(sub.valor)}</strong></div>`;
+                            return `<div>• ${sub.descricao} - <strong class="${corTexto}">${sinal}${formatarMoeda(sub.valor)}</strong></div>`;
                         }).join('')}
                     </div>`;
                 }
@@ -633,8 +849,9 @@
                     </td>
                     <td class="py-3 px-4 text-slate-600">${item.categoria || '-'}</td>
                     <td class="py-3 px-4 text-slate-600">${item.parcela || '1/1'}</td>
-                    <td class="py-3 px-4 text-center">${botaoItens}</td>
+                    <td class="py-3 px-4 font-mono font-bold text-indigo-600 text-xs">${item.idCompra}</td>
                     <td class="py-3 px-4 text-right font-bold text-slate-700">${formatarMoeda(item.valor)}</td>
+                    <td class="py-3 px-4 text-center">${botaoItens}</td>
                     <td class="py-3 px-4 text-center space-x-2">
                         <button onclick='abrirModalEditar(${JSON.stringify(item)})' class="text-indigo-600 hover:text-indigo-800 p-1" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
                         <button onclick="deletarRegistro('CartaoDeCredito', ${item.rowIndex})" class="text-rose-500 hover:text-rose-700 p-1" title="Excluir"><i class="fa-solid fa-trash"></i></button>
@@ -644,18 +861,15 @@
             });
         }
 
-        function toggleVisualizarItens(rowIndex) {
-            const el = document.getElementById(`subitens-${rowIndex}`);
-            if (el) {
-                el.classList.toggle('hidden');
-            }
+        function toggleVisualizarItens(idCompra) {
+            const el = document.getElementById(`subitens-${idCompra}`);
+            if (el) el.classList.toggle('hidden');
         }
 
         function renderizarDespesas() {
             const tbody = document.getElementById('tabelaDespesasCorpo');
             tbody.innerHTML = '';
             const lista = dadosGlobaisExtrato.filter(item => item.tipo === 'Despesas');
-
             document.getElementById('contadorDespesas').innerText = `${lista.length} itens`;
 
             if (lista.length === 0) {
@@ -685,7 +899,6 @@
             const tbody = document.getElementById('tabelaRendasCorpo');
             tbody.innerHTML = '';
             const lista = dadosGlobaisExtrato.filter(item => item.tipo === 'Rendas');
-
             document.getElementById('contadorRendas').innerText = `${lista.length} itens`;
 
             if (lista.length === 0) {
@@ -713,8 +926,8 @@
         function abrirModalRegistro(tipo) {
             document.getElementById('modalTipoAba').value = tipo;
             document.getElementById('modalRowIndex').value = '';
+            document.getElementById('modalIdCompra').value = '';
             document.getElementById('modalTitulo').innerText = 'Novo Registro - ' + tipo;
-            
             document.getElementById('modalData').value = obterDataLocalISO();
             document.getElementById('modalValor').value = '';
             document.getElementById('modalDescricao').value = '';
@@ -733,6 +946,7 @@
         function abrirModalEditar(item) {
             document.getElementById('modalTipoAba').value = item.tipo;
             document.getElementById('modalRowIndex').value = item.rowIndex;
+            document.getElementById('modalIdCompra').value = item.idCompra || '';
             document.getElementById('modalTitulo').innerText = 'Editar Registro - ' + item.tipo;
 
             if (item.data && item.data.includes('/')) {
@@ -753,8 +967,8 @@
             const container = document.getElementById('listaSubItensContainer');
             container.innerHTML = '';
             if (item.tipo === 'CartaoDeCredito') {
-                const subItens = dadosGlobaisItensCartao.filter(sub => parseInt(sub.rowIndex) === parseInt(item.rowIndex));
-                subItens.forEach(sub => adicionarLinhaSubItem(sub.tipoSub || 'debito', sub.descricao, formatarMoeda(sub.valor)));
+                const subItens = dadosGlobaisItensCartao.filter(sub => parseInt(sub.idCompra) === parseInt(item.idCompra));
+                subItens.forEach(sub => adicionarLinhaSubItem(sub.tipoSub || 'debito', sub.descricao, formatarMoeda(sub.valor), false));
             }
             validarSomaItensCartao();
 
@@ -786,7 +1000,7 @@
             document.getElementById('modalRegistro').classList.add('hidden');
         }
 
-        function adicionarLinhaSubItem(tipoSub = 'debito', desc = '', val = '') {
+        function adicionarLinhaSubItem(tipoSub = 'debito', desc = '', val = '', focar = false) {
             const container = document.getElementById('listaSubItensContainer');
             const div = document.createElement('div');
             div.className = "flex items-center space-x-2 sub-item-linha";
@@ -807,23 +1021,25 @@
                 <button type="button" onclick="removerLinhaSubItem(this)" class="text-rose-400 hover:text-rose-600 px-1" title="Excluir item"><i class="fa-solid fa-trash-can text-xs"></i></button>
             `;
             container.appendChild(div);
+
+            if (focar) {
+                const inputDesc = div.querySelector('.item-desc');
+                if (inputDesc) inputDesc.focus();
+            }
             validarSomaItensCartao();
         }
 
         function alternarTipoSubItem(btn) {
             const divLinha = btn.closest('.sub-item-linha');
             const inputTipo = divLinha.querySelector('.item-tipo');
-            
             if (inputTipo.value === 'debito') {
                 inputTipo.value = 'credito';
                 btn.className = "w-7 h-7 rounded-lg border flex items-center justify-center transition bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-100";
                 btn.innerHTML = '<i class="fa-solid fa-minus text-xs"></i>';
-                btn.title = "Tipo: Cupom/Crédito (-)";
             } else {
                 inputTipo.value = 'debito';
                 btn.className = "w-7 h-7 rounded-lg border flex items-center justify-center transition bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200";
                 btn.innerHTML = '<i class="fa-solid fa-plus text-xs"></i>';
-                btn.title = "Tipo: Débito (+)";
             }
             validarSomaItensCartao();
         }
@@ -839,32 +1055,24 @@
 
             const valorDigitado = converterMoedaParaNumero(document.getElementById('modalValor').value);
             const parcelaStr = document.getElementById('modalParcela').value.trim();
-            
             let qtdParcelas = 1;
             if (parcelaStr.includes('/')) {
                 const partesP = parcelaStr.split('/');
                 let totalY = parseInt(partesP[1]);
-                if (!isNaN(totalY) && totalY > 0) {
-                    qtdParcelas = totalY;
-                }
+                if (!isNaN(totalY) && totalY > 0) qtdParcelas = totalY;
             }
 
             const valorEsperado = valorDigitado * qtdParcelas;
-
             const linhas = document.querySelectorAll('.sub-item-linha');
             let somaItens = 0;
             linhas.forEach(linha => {
                 const tipoSub = linha.querySelector('.item-tipo').value;
                 const valorSub = converterMoedaParaNumero(linha.querySelector('.item-valor').value);
-                if (tipoSub === 'credito') {
-                    somaItens -= valorSub;
-                } else {
-                    somaItens += valorSub;
-                }
+                if (tipoSub === 'credito') somaItens -= valorSub;
+                else somaItens += valorSub;
             });
 
             document.getElementById('lblSomaItens').innerText = formatarMoeda(somaItens);
-            
             const statusLbl = document.getElementById('lblStatusSoma');
             if (linhas.length > 0 && Math.abs(somaItens - valorEsperado) > 0.01) {
                 statusLbl.className = "text-amber-500 font-bold";
@@ -878,6 +1086,7 @@
         function salvarRegistro() {
             const tipo = document.getElementById('modalTipoAba').value;
             const rowIndex = document.getElementById('modalRowIndex').value;
+            const idCompra = document.getElementById('modalIdCompra').value;
             const dataInput = document.getElementById('modalData').value;
             const valorNumerico = converterMoedaParaNumero(document.getElementById('modalValor').value);
             const descricao = document.getElementById('modalDescricao').value;
@@ -898,6 +1107,7 @@
                 action: rowIndex ? 'editar' : 'inserir',
                 tipo: tipo,
                 rowIndex: rowIndex,
+                idCompra: idCompra,
                 data: dataFormatada,
                 valor: valorNumerico,
                 descricao: descricao,
@@ -910,7 +1120,6 @@
             if (tipo === 'CartaoDeCredito') {
                 const linhas = document.querySelectorAll('.sub-item-linha');
                 let itensArray = [];
-
                 linhas.forEach(linha => {
                     const tipoSub = linha.querySelector('.item-tipo').value;
                     const descItem = linha.querySelector('.item-desc').value.trim();
@@ -919,30 +1128,26 @@
                         itensArray.push({ tipoSub: tipoSub, descricao: descItem, valor: valItem });
                     }
                 });
-
                 params.itensJson = JSON.stringify(itensArray);
             }
 
             const queryString = new URLSearchParams(params).toString();
-            
             const inicio = iniciarTemporizadorTempoReal();
             fetch(URL_API + "?" + queryString)
                 .then(res => res.json())
                 .then(resposta => {
                     pararTemporizadorTempoReal(inicio);
-
                     fecharModalRegistro();
                     carregarDados();
                 })
                 .catch(err => {
                     pararTemporizadorTempoReal(inicio);
-                    console.error("Erro ao salvar:", err);
                     alert("Erro ao salvar registro.");
                 });
         }
 
         function deletarRegistro(tipo, rowIndex) {
-            if (!confirm("Tem certeza que deseja excluir este registro?")) return;
+            if (!confirm("Tem certeza que deseja excluir este registro e todas as suas parcelas associadas?")) return;
 
             const params = new URLSearchParams({
                 action: 'deletar',
@@ -955,12 +1160,10 @@
                 .then(res => res.json())
                 .then(resposta => {
                     pararTemporizadorTempoReal(inicio);
-
                     carregarDados();
                 })
                 .catch(err => {
                     pararTemporizadorTempoReal(inicio);
-                    console.error("Erro ao excluir:", err);
                     alert("Erro ao excluir registro.");
                 });
         }
