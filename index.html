@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle Financeiro Pessoal</title>
+    <!-- Favicon com Emoji via Data URI -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome para Ícones -->
@@ -46,9 +48,9 @@
                 </div>
             </div>
 
-            <!-- Versão v1.7.5 -->
+            <!-- Versão v1.7.7 -->
             <div id="labelVersaoData" class="absolute bottom-1 left-4 text-[10px] text-indigo-100 font-semibold tracking-wide pointer-events-none drop-shadow-sm">
-                v1.7.5 • --/--/---- --:--
+                v1.7.7 • 16/10/2026 08:16
             </div>
 
             <!-- Temporizador de Comunicação (em tempo real) -->
@@ -359,16 +361,10 @@
         };
 
         function exibirVersaoData() {
-            const agora = new Date();
-            const dia = String(agora.getDate()).padStart(2, '0');
-            const mes = String(agora.getMonth() + 1).padStart(2, '0');
-            const ano = agora.getFullYear();
-            const hora = String(agora.getHours()).padStart(2, '0');
-            const minuto = String(agora.getMinutes()).padStart(2, '0');
-            
             const elemento = document.getElementById('labelVersaoData');
             if (elemento) {
-                elemento.innerText = `v1.7.5 • ${dia}/${mes}/${ano} ${hora}:${minuto}`;
+                // Versão e carimbo estático de quando o código foi gerado/atualizado
+                elemento.innerText = "v1.7.7 • 16/10/2026 08:16";
             }
         }
 
@@ -475,7 +471,6 @@
         }
 
         function mudarAba(aba) {
-            // Mapeamento correto para os IDs internos
             const idConteudo = aba === 'CartaoDeCredito' ? 'conteudoCartaoDeCredito' : 'conteudo' + aba;
             const idTabela = aba === 'CartaoDeCredito' ? 'tabelaContainerCartao' : 'tabelaContainer' + aba;
 
